@@ -11,8 +11,10 @@ spring:
       fetch-size: 100
   sql:
     init:
-      mode: always
-      platform: postgresql
+      mode: never
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
 
 server:
   port: 8080
