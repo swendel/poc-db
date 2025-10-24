@@ -23,8 +23,9 @@
 hs_err_pid*
 
 # intellij and compiling
-.idea
+/.idea/
 *.iml
+/poc-db.iml
 target
 
 /${project.build.directory}/classes/application.yaml
