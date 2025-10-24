@@ -1,8 +1,7 @@
-version: "3.9"
-
 services:
   pg-primary:
-    image: bitnami/postgresql:16
+    # Using 'latest' because only this tag is available in your registry/Docker Hub view
+    image: bitnami/postgresql:latest
     container_name: pg-primary
     restart: unless-stopped
     environment:
@@ -13,7 +12,7 @@ services:
       # Superuser (postgres)
       - POSTGRESQL_POSTGRES_PASSWORD=supersecret
       # Replikation
-      - POSTGRESQL_REPLICATION_MODE=primary
+      - POSTGRESQL_REPLICATION_MODE=master
       - POSTGRESQL_REPLICATION_USER=repl_user
       - POSTGRESQL_REPLICATION_PASSWORD=repl_secret
       # Synchronie: 1 synchrone Replica, Commit wartet auf deren Bestätigung
@@ -34,18 +33,19 @@ services:
     networks: [pgnet]
 
   pg-replica:
-    image: bitnami/postgresql:16
+    # Using 'latest' to match availability in your registry
+    image: bitnami/postgresql:latest
     container_name: pg-replica
     restart: unless-stopped
     depends_on:
       pg-primary:
         condition: service_healthy
     environment:
-      - POSTGRESQL_REPLICATION_MODE=replica
-      - POSTGRESQL_PRIMARY_HOST=pg-primary
-      - POSTGRESQL_PRIMARY_PORT_NUMBER=5432
-      - POSTGRESQL_PRIMARY_USER=repl_user
-      - POSTGRESQL_PRIMARY_PASSWORD=repl_secret
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_MASTER_HOST=pg-primary
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - POSTGRESQL_MASTER_USER=repl_user
+      - POSTGRESQL_MASTER_PASSWORD=repl_secret
       # Muss mit dem Namen im Primary (CLUSTER_APP_NAME) zusammenpassen
       - POSTGRESQL_CLUSTER_APP_NAME=replica1
       # Optional: nur lesen zulassen (Standard der Replica ist bereits read-only)
