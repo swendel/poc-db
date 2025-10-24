@@ -22,11 +22,11 @@ services:
       # application_name, auf das sich synchronous_standby_names referenziert
       - POSTGRESQL_CLUSTER_APP_NAME=replica1
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pg_primary_data:/bitnami/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=supersecret pg_isready -U postgres -h 127.0.0.1"]
+      test: ["CMD-SHELL", "PGPASSWORD=app_password pg_isready -U app -d appdb -h 127.0.0.1"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -51,7 +51,7 @@ services:
       # Optional: nur lesen zulassen (Standard der Replica ist bereits read-only)
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - "5433:5432" # Zugriff auf die Read-Replica über 5433
+      - "127.0.0.1:5433:5432" # Zugriff auf die Read-Replica über 5433
     volumes:
       - pg_replica_data:/bitnami/postgresql
     healthcheck:
