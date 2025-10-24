@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: poc-db
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:55432/appdb
+    username: app
+    password: app_password
+    driver-class-name: org.postgresql.Driver
+  jdbc:
+    template:
+      fetch-size: 100
+  sql:
+    init:
+      mode: always
+      platform: postgresql
+
+server:
+  port: 8080
