@@ -61,9 +61,78 @@ services:
       retries: 10
     networks: [pgnet]
 
+  cockroach-1:
+    image: cockroachdb/cockroach:latest
+    container_name: cockroach-1
+    restart: unless-stopped
+    command: start --insecure --listen-addr=cockroach-1:26257 --http-addr=0.0.0.0:8080 --join=cockroach-1:26257,cockroach-2:26257,cockroach-3:26257
+    ports:
+      - "127.0.0.1:56257:26257" # SQL Port node 1
+      - "127.0.0.1:58080:8080"  # Web UI node 1
+    volumes:
+      - cockroach1_data:/cockroach/cockroach-data
+    healthcheck:
+      test: ["CMD-SHELL", "cockroach sql --insecure --host=127.0.0.1:26257 -e 'SELECT 1' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [pgnet]
+
+  cockroach-2:
+    image: cockroachdb/cockroach:latest
+    container_name: cockroach-2
+    restart: unless-stopped
+    command: start --insecure --listen-addr=cockroach-2:26257 --http-addr=0.0.0.0:8080 --join=cockroach-1:26257,cockroach-2:26257,cockroach-3:26257
+    ports:
+      - "127.0.0.1:56258:26257" # SQL Port node 2
+      - "127.0.0.1:58081:8080"  # Web UI node 2
+    volumes:
+      - cockroach2_data:/cockroach/cockroach-data
+    healthcheck:
+      test: ["CMD-SHELL", "cockroach sql --insecure --host=127.0.0.1:26257 -e 'SELECT 1' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [pgnet]
+
+  cockroach-3:
+    image: cockroachdb/cockroach:latest
+    container_name: cockroach-3
+    restart: unless-stopped
+    command: start --insecure --listen-addr=cockroach-3:26257 --http-addr=0.0.0.0:8080 --join=cockroach-1:26257,cockroach-2:26257,cockroach-3:26257
+    ports:
+      - "127.0.0.1:56259:26257" # SQL Port node 3
+      - "127.0.0.1:58082:8080"  # Web UI node 3
+    volumes:
+      - cockroach3_data:/cockroach/cockroach-data
+    healthcheck:
+      test: ["CMD-SHELL", "cockroach sql --insecure --host=127.0.0.1:26257 -e 'SELECT 1' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [pgnet]
+
+  cockroach-init:
+    image: cockroachdb/cockroach:latest
+    container_name: cockroach-init
+    depends_on:
+      cockroach-1:
+        condition: service_started
+      cockroach-2:
+        condition: service_started
+      cockroach-3:
+        condition: service_started
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "cockroach init --insecure --host=cockroach-1:26257 || true"
+    networks: [pgnet]
+
 networks:
   pgnet:
 
 volumes:
   pg_primary_data:
   pg_replica_data:
+  cockroach1_data:
+  cockroach2_data:
+  cockroach3_data:
