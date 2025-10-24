@@ -4,43 +4,45 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.UUID;
+
 @Table("BerechnungDetails")
 public class BerechnungDetails {
 
     @Id
-    private Long id;
+    private UUID id;
 
     @Column("status_id")
-    private Long statusId;
+    private UUID statusId;
 
     private String details;
 
     public BerechnungDetails() {
     }
 
-    public BerechnungDetails(Long id, Long statusId, String details) {
+    public BerechnungDetails(UUID id, UUID statusId, String details) {
         this.id = id;
         this.statusId = statusId;
         this.details = details;
     }
 
-    public static BerechnungDetails of(Long statusId, String details) {
+    public static BerechnungDetails of(UUID statusId, String details) {
         return new BerechnungDetails(null, statusId, details);
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public Long getStatusId() {
+    public UUID getStatusId() {
         return statusId;
     }
 
-    public void setStatusId(Long statusId) {
+    public void setStatusId(UUID statusId) {
         this.statusId = statusId;
     }
 

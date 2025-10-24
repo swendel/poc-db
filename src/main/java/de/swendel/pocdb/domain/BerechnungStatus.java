@@ -5,12 +5,13 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Table("BerechnungStatus")
 public class BerechnungStatus {
 
     @Id
-    private Long id;
+    private UUID id;
 
     private String status;
 
@@ -20,7 +21,7 @@ public class BerechnungStatus {
     public BerechnungStatus() {
     }
 
-    public BerechnungStatus(Long id, String status, Instant startedAt) {
+    public BerechnungStatus(UUID id, String status, Instant startedAt) {
         this.id = id;
         this.status = status;
         this.startedAt = startedAt;
@@ -30,11 +31,11 @@ public class BerechnungStatus {
         return new BerechnungStatus(null, "STARTED", Instant.now());
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

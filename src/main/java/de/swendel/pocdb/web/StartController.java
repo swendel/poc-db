@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -34,6 +35,7 @@ public class StartController {
             detailsRepository.save(BerechnungDetails.of(savedStatus.getId(), details));
         }
 
-        return ResponseEntity.created(URI.create("/api/status/" + savedStatus.getId())).body(savedStatus);
+        UUID id = savedStatus.getId();
+        return ResponseEntity.created(URI.create("/api/status/" + id)).body(savedStatus);
     }
 }
