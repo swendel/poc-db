@@ -1,0 +1,25 @@
+meta {
+  name: start
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/start
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+      "details": "manueller Start via Bruno"
+    }
+}
+
+settings {
+  encodeUrl: true
+}
