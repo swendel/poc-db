@@ -2,7 +2,7 @@ spring:
   application:
     name: poc-db
   datasource:
-    url: jdbc:postgresql://127.0.0.1:55432/appdb
+    url: jdbc:postgresql://127.0.0.1:55432/app_db
     username: app
     password: app_password
     driver-class-name: org.postgresql.Driver
