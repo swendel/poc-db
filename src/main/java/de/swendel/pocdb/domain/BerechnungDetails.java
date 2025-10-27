@@ -1,11 +1,13 @@
 package de.swendel.pocdb.domain;
 
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
+@Data
 @Table("BerechnungDetails")
 public class BerechnungDetails {
 
@@ -30,27 +32,4 @@ public class BerechnungDetails {
         return new BerechnungDetails(null, statusId, details);
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getStatusId() {
-        return statusId;
-    }
-
-    public void setStatusId(UUID statusId) {
-        this.statusId = statusId;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
 }
