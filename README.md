@@ -3,33 +3,51 @@
 - Verzeichnis /localsetup mit docker compose Konfig, die
   - Postgres-Cluster (ein primary und ein replica) für Tests Replication, write/read-Trennung etc.
   - Cockroach-Cluster (3 nodes)
-  - 3 standalone Postgres-Instanzen (für Tests Client-Side-Sharding)
+  - todo: 3 standalone Postgres-Instanzen (für Tests Client-Side-Sharding)
 
-# how to install
+# Installation Teil 1: Datenbanken per docker compose starten
 - Vorher: Docker installiert, Docker compose installiert
 - cd /localsetup
 - docker compose up --force-recreate
-- SpringBoot Anwendung bauen: mvn clean install
-- Spring Boot Anwendung starten
+
+## Installation Teil 2: SpringBoot-App bauen und per Docker starten
+Voraussetzung: Docker ist installiert. Im Projektwurzelverzeichnis (wo das Dockerfile liegt) ausführen:
+
+```bash
+docker build -t poc-db:latest .
+```
+
+Anschließend kann der Container z. B. so gestartet werden (mindestens DB_HOST setzen; die restlichen Werte haben gute Defaults in application.yml):
+
+```bash
+docker run --rm -p 8080:8080 -e DB_HOST=host.docker.internal poc-db:latest
+```
+
+Hinweis (Linux): Falls host.docker.internal nicht auflöst, nutze zusätzlich:
+
+```bash
+docker run --rm --add-host=host.docker.internal:host-gateway -p 8080:8080 -e DB_HOST=host.docker.internal poc-db:latest
+```
 
 # how to run load-tests
-- Tool der wahl: hey
+- Tool der Wahl: hey
 - Verzeichnis /loadtest
-- Dort Bash Skript ausführen (Erklärung in Skript)
+- Dort Bash Skript ausführen (Erklärung in Skript). Per Default werden 100 Datensätze angelegt
 
 # How to call REST-Endpoint
 - Siehe Bruno-Skript unter "bruno-collections"
 - Dort Request mit einem Post abgelegt
 - Bei Erzeugen eines BerechnungsDetails Eintrages in der DB wird automatisch auch ein BerechnungsStatus gesetzt
 
-# how to shut down
+# how to shut down Databases
 - docker compose down -v (-v damit auch die Voulmes und somit die Daten in den DBs gelöscht werden)
 
-## Datenbank-Verbindung konfigurieren, wenn die App via Docker gestartet wird
-Die App war bisher fest auf 127.0.0.1:55432 konfiguriert. In einem Docker-Container zeigt 127.0.0.1 jedoch auf den Container selbst – daher kam der Fehler "Connection to 127.0.0.1:55432 refused".
+## Weitere Info: Datenbank-Verbindung konfigurieren, wenn die App via Docker gestartet wird
+
+Wird die SpringBoot App ohne Docker gestartet (z.B. durch run in der IDE), dann muss der DB_HOST auf localhost gehen
 
 DB-Parameter werden über Umgebungsvariablen gesteuert (mit sinnvollen Defaults):
-- DB_HOST (Default: host.docker.internal)
+- DB_HOST (Default: localhost, bei Start via Docker: host.docker.internal)
 - DB_PORT (Default: 55432)
 - DB_NAME (Default: app_db)
 - DB_USER (Default: app)
@@ -41,10 +59,5 @@ Diese Variablen füllen die Spring-Properties in src/main/resources/application.
 - spring.datasource.password=${DB_PASSWORD}
 
 Beispiele:
-- App als Docker-Container, Zugriff auf Postgres aus localsetup (Host-Port 55432):
-  docker run --rm -p 8080:8080 \
-    -e DB_HOST=host.docker.internal -e DB_PORT=55432 \
-    -e DB_NAME=app_db -e DB_USER=app -e DB_PASSWORD=app_password \
-    poc-db:latest
-
+- siehe "docker run" weiter oben
 - Wird Docker aus einer IDE heraus gestartet (z.B. IntelliJ) dann die o.g. Port-Bindings (8080:8080) und die ENV-Variablen (mindestens DB_HOST) in der IDE setzen
