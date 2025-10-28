@@ -32,3 +32,4 @@ target
 /${project.build.directory}/classes/banner.txt
 /${project.build.directory}/test-classes/application.yaml
 /terraform/env/dev/tfplan
+/.vscode/settings.json
