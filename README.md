@@ -9,8 +9,11 @@
 - Vorher: Docker installiert, Docker compose installiert
 - cd /localsetup
 - docker compose up --force-recreate
+- Logs sollte keine Fehler enthalten
+- In der Lieblings-DB-Admin-Oberfläche der Wahl die DataSources eintragen (werte aus docker-compose.yml)
+- Cockroach hat eine eigene Admin-Oberfläche, siehe Doku von Cockroach
 
-## Installation Teil 2: SpringBoot-App bauen und per Docker starten
+# Installation Teil 2: SpringBoot-App bauen und per Docker starten
 Voraussetzung: Docker ist installiert. Im Projektwurzelverzeichnis (wo das Dockerfile liegt) ausführen:
 
 ```bash
@@ -30,9 +33,10 @@ docker run --rm --add-host=host.docker.internal:host-gateway -p 8080:8080 -e DB_
 ```
 
 # how to run load-tests
-- Tool der Wahl: hey
+- Tool der Wahl: hey (keep it simple, https://github.com/rakyll/hey)
 - Verzeichnis /loadtest
 - Dort Bash Skript ausführen (Erklärung in Skript). Per Default werden 100 Datensätze angelegt
+- Aussagefähige Lasttests sollten mindestens 5 min laufen (hey hat mit -z Zeitparameter)
 
 # How to call REST-Endpoint
 - Siehe Bruno-Skript unter "bruno-collections"
