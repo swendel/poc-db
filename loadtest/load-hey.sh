@@ -16,6 +16,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_URL=${BASE_URL:-http://localhost:8080/api/start}
 N=${N:-100}
 C=${C:-5}
+Z=${Z:-10m}
 DETAILS=${DETAILS:-"via hey"}
 
 BODY_FILE="${DIR}/body-hey.json"
@@ -23,4 +24,5 @@ echo "{\"details\":\"${DETAILS}\"}" >"${BODY_FILE}"
 
 # Requires: hey (https://github.com/rakyll/hey)
 # macOS install: brew install hey
-exec hey -n "${N}" -c "${C}" -m POST -H "Content-Type: application/json" -D "${BODY_FILE}" "${BASE_URL}"
+# exec hey -n "${N}" -c "${C}" -m POST -H "Content-Type: application/json" -D "${BODY_FILE}" "${BASE_URL}"
+exec hey -z "${Z}" -c "${C}" -m POST -H "Content-Type: application/json" -D "${BODY_FILE}" "${BASE_URL}"
