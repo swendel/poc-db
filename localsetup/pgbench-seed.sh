@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-COUNT="${1:-10000}"
+COUNT="${1:-10}"
 CLIENTS="${2:-1}"
 
 # Wenn pgbench in Docker läuft, standardmäßig host.docker.internal verwenden, um die DB zu erreichen
