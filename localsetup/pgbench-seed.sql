@@ -1,20 +1,20 @@
--- pgbench custom script to seed one status + details row per transaction
--- Schema from Flyway V1__init.sql:
+-- pgbench‑Skript, das pro Transaktion eine Status‑ und eine Detail‑Zeile erzeugt
+-- Schema aus Flyway V1__init.sql:
 --   "BerechnungStatus"(id UUID default gen_random_uuid(), status TEXT NOT NULL, started_at TIMESTAMPTZ default now())
 --   "BerechnungDetails"(id UUID default gen_random_uuid(), status_id UUID NOT NULL REFERENCES "BerechnungStatus"(id), details TEXT)
 --
--- Each run of this script (one transaction) inserts:
---   1 row into "BerechnungStatus" with a random status
---   1 row into "BerechnungDetails" referencing the inserted status
+-- Jeder Lauf dieses Skripts (eine Transaktion) fügt ein:
+--   1 Zeile in "BerechnungStatus" mit zufälligem Status
+--   1 Zeile in "BerechnungDetails", die auf den eingefügten Status verweist
 --
--- Safe to run concurrently. Primary keys are UUIDs generated in DB.
+-- Sicher parallel auszuführen. Primärschlüssel sind UUIDs und werden in der DB generiert.
 
--- pgbench variables (per transaction)
+-- pgbench‑Variablen (pro Transaktion)
 \set bid random(1,1000000000)
 
 BEGIN;
 
--- Insert status row and then a details row referencing it, in a single CTE
+-- In einer einzigen CTE: zuerst eine Status-Zeile einfügen, dann eine verweisende Details-Zeile
 WITH sel AS (
   SELECT CASE ((floor(random()*3))::int)
            WHEN 0 THEN 'NEW'
@@ -26,7 +26,7 @@ WITH sel AS (
   SELECT COALESCE(status, 'NEW') FROM sel
   RETURNING id
 )
--- NOTE: Escape colons in the format string so pgbench doesn't treat :MI / :SS as variables
+-- Hinweis: Doppelpunkte in der Format-String-Maske escapen, damit pgbench :MI / :SS nicht als Variablen interpretiert
 INSERT INTO "BerechnungDetails"(status_id, details)
 SELECT id,
        'Initial seed via pgbench; client=' || :client_id || ', bid=' || :bid ||

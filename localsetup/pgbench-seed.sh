@@ -1,35 +1,35 @@
 #!/usr/bin/env bash
-# Seed app_db on pg_primary with N rows using pgbench (via Docker)
-# Defaults match localsetup/docker-compose.yml
-# Usage:
-#   ./localsetup/pgbench-seed.sh [COUNT] [CLIENTS]
-# Examples:
-#   ./localsetup/pgbench-seed.sh            # 1000 rows, 1 client
-#   ./localsetup/pgbench-seed.sh 1000 4     # 1000 rows, 4 clients (250 tx/client)
+# Befülle app_db auf pg_primary mit N Zeilen per pgbench (via Docker)
+# Defaults entsprechen localsetup/docker-compose.yml
+# Nutzung:
+#   ./localsetup/pgbench-seed.sh [ANZAHL] [CLIENTS]
+# Beispiele:
+#   ./localsetup/pgbench-seed.sh            # 1000 Zeilen, 1 Client
+#   ./localsetup/pgbench-seed.sh 1000 4     # 1000 Zeilen, 4 Clients (250 Tx/Client)
 #
-# This script runs pgbench inside a short-lived Docker container (postgres image).
-# It does NOT require a local pgbench installation.
+# Dieses Skript startet pgbench in einem kurzlebigen Docker-Container (postgres-Image).
+# Eine lokale pgbench-Installation ist NICHT erforderlich.
 
 set -euo pipefail
 
 COUNT="${1:-10000}"
 CLIENTS="${2:-1}"
 
-# When pgbench runs inside Docker, use host.docker.internal by default to reach the DB
+# Wenn pgbench in Docker läuft, standardmäßig host.docker.internal verwenden, um die DB zu erreichen
 HOST="${DB_HOST:-host.docker.internal}"
 PORT="${DB_PORT:-55432}"
 DBNAME="${DB_NAME:-app_db}"
 USER="${DB_USER:-app}"
 PASS="${DB_PASSWORD:-app_password}"
 
-# Docker image to use for pgbench; override with PGBENCH_IMAGE if needed
+# Docker-Image für pgbench; bei Bedarf mit PGBENCH_IMAGE überschreiben
 IMAGE="${PGBENCH_IMAGE:-postgres:16}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SQL_FILE="${SCRIPT_DIR}/pgbench-seed.sql"
 
 if command -v docker >/dev/null 2>&1; then
-  # Use Dockerized pgbench (Docker required)
+  # Verwendung von Dockerisiertem pgbench (Docker erforderlich)
   docker run --rm \
     -e PGPASSWORD="${PASS}" \
     -v "${SQL_FILE}:/work/pgbench-seed.sql:ro" \
