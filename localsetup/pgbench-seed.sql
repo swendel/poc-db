@@ -9,6 +9,9 @@
 --
 -- Safe to run concurrently. Primary keys are UUIDs generated in DB.
 
+-- pgbench variables (per transaction)
+\set bid random(1,1000000000)
+
 BEGIN;
 
 -- Insert status row and then a details row referencing it, in a single CTE
@@ -19,10 +22,11 @@ WITH new_status AS (
   SELECT status FROM new_status
   RETURNING id
 )
+-- NOTE: Escape colons in the format string so pgbench doesn't treat :MI / :SS as variables
 INSERT INTO "BerechnungDetails"(status_id, details)
 SELECT id,
        'Initial seed via pgbench; client=' || :client_id || ', bid=' || :bid ||
-       ', ts=' || to_char(clock_timestamp(), 'YYYY-MM-DD"T"HH24:MI:SS.US')
+       ', ts=' || to_char(clock_timestamp(), 'YYYY-MM-DD"T"HH24\:MI\:SS.US')
 FROM ins;
 
 COMMIT;
