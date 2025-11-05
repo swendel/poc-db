@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-COUNT="${1:-10}"
+COUNT="${1:-10000}"
 CLIENTS="${2:-1}"
 
 # When pgbench runs inside Docker, use host.docker.internal by default to reach the DB
@@ -29,7 +29,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SQL_FILE="${SCRIPT_DIR}/pgbench-seed.sql"
 
 if command -v docker >/dev/null 2>&1; then
-  # Use Dockerized pgbench
+  # Use Dockerized pgbench (Docker required)
   docker run --rm \
     -e PGPASSWORD="${PASS}" \
     -v "${SQL_FILE}:/work/pgbench-seed.sql:ro" \
@@ -39,18 +39,8 @@ if command -v docker >/dev/null 2>&1; then
       -c "${CLIENTS}" -t "${COUNT}" -n -r -M simple \
       -f /work/pgbench-seed.sql
 else
-  # Fallback: try local pgbench if Docker is not available
-  if command -v pgbench >/dev/null 2>&1; then
-    export PGPASSWORD="${PASS}"
-    pgbench \
-      -h "${HOST}" -p "${PORT}" -U "${USER}" -d "${DBNAME}" \
-      -c "${CLIENTS}" -t "${COUNT}" -n -r -M simple \
-      -f "${SQL_FILE}"
-  else
-    echo "Error: Neither Docker nor local pgbench is available.\n" \
-         "Install Docker (https://docs.docker.com/get-docker/) or pgbench (e.g., brew install postgresql@16)." >&2
-    exit 1
-  fi
+  echo "Error: Docker is required to run this script. Please install Docker and ensure the 'docker' CLI is available in PATH." >&2
+  exit 1
 fi
 
 echo "\nDone. Inserted ${COUNT} rows into \"BerechnungStatus\" and \"BerechnungDetails\" (one each per transaction)."

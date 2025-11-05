@@ -15,11 +15,15 @@
 BEGIN;
 
 -- Insert status row and then a details row referencing it, in a single CTE
-WITH new_status AS (
-  SELECT (ARRAY['NEW','RUNNING','DONE'])[1 + (random()*3)::int] AS status
+WITH sel AS (
+  SELECT CASE ((floor(random()*3))::int)
+           WHEN 0 THEN 'NEW'
+           WHEN 1 THEN 'RUNNING'
+           WHEN 2 THEN 'DONE'
+         END AS status
 ), ins AS (
   INSERT INTO "BerechnungStatus"(status)
-  SELECT status FROM new_status
+  SELECT COALESCE(status, 'NEW') FROM sel
   RETURNING id
 )
 -- NOTE: Escape colons in the format string so pgbench doesn't treat :MI / :SS as variables
